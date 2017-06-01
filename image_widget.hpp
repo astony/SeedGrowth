@@ -6,6 +6,7 @@
 #include <QGridLayout>
 #include <QTest>
 #include <QMessageBox>
+#include <qmath.h>
 
 #include "generator/base.hpp"
 #include "generator/random.hpp"

@@ -136,35 +136,36 @@ void ImageWidget::Recrystalization()
     double B = 9.41268203527779;
     double t = 0.001;
     double dt = 0.001;
+
     bool Rec = true;
 
-    QVector<double> PointsRo(Points->size(), 0);
+    QVector<double> PointsRo(Points->size(), 0.0);
     QVector<bool> PointsRecrystalized(Points->size(), false);
     QVector<bool> PointsRecrystalizedPrev(Points->size(), false);
 
-    double CRITICAL_RO = ((A / B) + (1 - A / B) * exp(-B * 0.065)) / rowCount() * columnCount();
+    double CRITICAL_RO = ((A / B) + (1.0 - A / B) * qExp(-B * 0.065)) / (rowCount() * columnCount());
 
     while(Rec)
     {
-        Ro = (A / B) + (1 - A / B) * exp(-B * t) - PrevRo;
+        Ro = (A / B) + (1 - A / B) * qExp(-B * t) - PrevRo;
 
         for(int i = 0; i < Points->size(); ++i)
         {
             if(PointsRecrystalized.at(i) == false)
             {
-                double a;
                 if(IsOnEdge(Points->at(i)))
                 {
-                    a = 0.8 * (Ro / rowCount() * columnCount());
+                    double a = 0.8 * (Ro / (rowCount() * columnCount()));
+                    PointsRo[i] += a;
+                    RoAll += a;
 
                 }
                 else
                 {
-                    a = 0.2 * (Ro / rowCount() * columnCount());
+                    double a = 0.2 * (Ro / (rowCount() * columnCount()));
+                    PointsRo[i] += a;
+                    RoAll += a;
                 }
-
-                PointsRo[i] += a;
-                RoAll += a;
             }
             else
             {
@@ -185,28 +186,17 @@ void ImageWidget::Recrystalization()
                 QColor NewColor = QColor(Distribution(RandomEngine), Distribution(RandomEngine), Distribution(RandomEngine));
 
                 TmpPoints.push_back(QPair<QPoint, QColor>(Points->at(i).first, NewColor));
-                ReplacePoint(QPair<QPoint, QColor>(Points->at(i).first, NewColor));
-
-                emit PopulatePixel(Points->at(i));
-
-                PointsRecrystalized[i] = true;
 
                 PointsRo[i] = 0.0;
-
             }
         }
-
-        TmpPoints.clear();
 
         QPoint TmpPoint;
         int TmpPointIndex;
 
-
-        bool TmpPointsBool = true;
-
         for(int i = 0; i < Points->size(); ++i)
         {
-            if(PointsRecrystalizedPrev.at(i) == true)
+            if(PointsRecrystalized.at(i) == true)
             {
                 QVector<QPoint> Length = { QPoint(-1, -1), QPoint(0, -1), QPoint(1, -1),
                                             QPoint(-1, 0), QPoint(1, 0),
@@ -215,21 +205,11 @@ void ImageWidget::Recrystalization()
                 {
                     TmpPoint = Points->at(i).first + j;
                     TmpPointIndex = FindPointIndex(TmpPoint);
-                    if(IsValid(TmpPoint))
+                    if(IsValid(TmpPoint) && PointsRecrystalizedPrev.at(TmpPointIndex) == false)
                     {
                         TmpPoints.push_back(QPair<QPoint, QColor>(TmpPoint, Points->at(i).second));
-                        if(PointsRecrystalized.at(TmpPointIndex) == true)
-                        {
-                            TmpPointsBool = false;
-                            break;
-                        }
+                        PointsRo[TmpPointIndex] = 0.0;
                     }
-                }
-
-                if(TmpPointsBool)
-                {
-                    ReplacePoint(TmpPoints);
-                    emit PopulatePixel(TmpPoints);
                 }
             }
         }
@@ -238,44 +218,36 @@ void ImageWidget::Recrystalization()
 
         int K = 0;
 
-        TmpPoints = QVector<QPair<QPoint, QColor>>(*Points);
+        std::uniform_int_distribution<int> PointsIndexDistribution(0, Points->size() - 1);
 
-        int i;
-
-        while(TmpPoints.size() > 0)
+        for(int i = 0; i < Points->size(); ++i)
         {
-            std::uniform_int_distribution<int> DistributionPoints(0, TmpPoints.size() - 1);
-            i = DistributionPoints(RandomEngine);
+            int index = PointsIndexDistribution(RandomEngine);
+
             if(K > 10)
             {
                 break;
             }
 
-            if(PointsRecrystalized.at(FindPointIndex(TmpPoints.at(i).first)) == false && IsOnEdge(TmpPoints.at(i)))
+            if(PointsRecrystalized.at(index) == false && IsOnEdge(Points->at(index)))
             {
-                PointsRo[i] += RoDiff;
+                PointsRo[index] += RoDiff;
                 K++;
             }
+        }
 
-            TmpPoints.remove(i);
+        emit PopulatePixel(TmpPoints);
+        ReplacePoint(TmpPoints);
+
+        for(int i = 0; i < TmpPoints.size(); ++i)
+        {
+            int index = FindPointIndex(TmpPoints.at(i).first);
+            PointsRo[index] = 0.0;
+            PointsRecrystalized[index] = true;
+            PointsRecrystalizedPrev[index] = PointsRecrystalized[index];
         }
 
         TmpPoints.clear();
-
-//        for(int i = 0; i < Points->size(); ++i)
-//        {
-//            if(K > 10)
-//            {
-//                break;
-//            }
-
-//            if(PointsRecrystalized.at(i) == false && IsOnEdge(Points->at(i)))
-//            {
-//                PointsRo[i] += RoDiff;
-//                K++;
-//            }
-//        }
-
 
         if(RecNumber == rowCount() * columnCount()){
             break;
@@ -288,9 +260,7 @@ void ImageWidget::Recrystalization()
         RecNumber = 0;
         RoAll = 0.0;
 
-        PointsRecrystalizedPrev = QVector<bool>(PointsRecrystalized);
-
-        QTest::qWait(0.0000001);
+        QTest::qWait(1);
 
     }
 
