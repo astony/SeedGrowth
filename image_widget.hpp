@@ -56,8 +56,11 @@ private:
 
     int CalculateE(const QPair<QPoint, QColor> &Point);
     QPair<QPoint, QColor> FindPoint(const QPoint &Point);
+    int FindPointIndex(const QPoint &Point);
     void ReplacePoint(const QPair<QPoint, QColor> &Point);
+    void ReplacePoint(const QVector<QPair<QPoint, QColor>> &Point);
     bool IsValid(const QPoint &Point);
+    bool IsOnEdge(const QPair<QPoint, QColor> &Point);
 
 signals:
     void FeedsChanged(int Feeds);

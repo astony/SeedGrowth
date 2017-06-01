@@ -4,9 +4,6 @@ Generator::Random::Random(int WidthMax, int HeightMax) : Base(WidthMax, HeightMa
 {
     UniqPointsCount = 3600;
     UniqColorsCount = 100;
-
-    FillPoints();
-    FillColors();
 }
 
 void Generator::Random::FillPoints()
@@ -54,7 +51,29 @@ QVector<QPair<QPoint, QColor>>* Generator::Random::generate()
                                  Qt::WindowCloseButtonHint);
 
     if(PointsDone == false)
-        return nullptr;
+        return new QVector<QPair<QPoint, QColor>>;
+
+    bool ColorsDone = false;
+    int ColorsInput = 15;
+
+    ColorsInput = QInputDialog::getInt(0,
+                                 "Generowanie",
+                                 "Podaj liczbe kolorów",
+                                 ColorsInput,
+                                 2,
+                                 (WidthMax + 1) * (HeightMax + 1),
+                                 1,
+                                 &ColorsDone,
+                                 Qt::WindowCloseButtonHint);
+
+    if(ColorsDone == false)
+        return new QVector<QPair<QPoint, QColor>>;
+
+    UniqPointsCount = PointsInput;
+    UniqColorsCount = ColorsInput;
+
+    FillPoints();
+    FillColors();
 
     QVector<QPair<QPoint, QColor>> *GeneratedPoints = new QVector<QPair<QPoint, QColor>>;
 
