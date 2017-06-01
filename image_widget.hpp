@@ -5,6 +5,7 @@
 #include <QHeaderView>
 #include <QGridLayout>
 #include <QTest>
+#include <QMessageBox>
 
 #include "generator/base.hpp"
 #include "generator/random.hpp"
@@ -52,7 +53,11 @@ private:
 
     bool IsPopulated(const QPoint &Point);
     bool IsPeriodic(const QPoint &Point);
-    int GrowStep(QVector<QPair<QPoint, QColor>> NewPoints);
+
+    int CalculateE(const QPair<QPoint, QColor> &Point);
+    QPair<QPoint, QColor> FindPoint(const QPoint &Point);
+    void ReplacePoint(const QPair<QPoint, QColor> &Point);
+    bool IsValid(const QPoint &Point);
 
 signals:
     void FeedsChanged(int Feeds);
@@ -63,11 +68,15 @@ signals:
     void PointsChanged(const QVector<QPair<QPoint, QColor>> &Points);
 
     void GrowFinished();
+    void RecrystallizationFinished();
+    void MonteCarloFinished();
 
 public slots:
     void Clean();
     void Generate();
     void Grow();
+    void Recrystalization();
+    void MonteCarlo();
     void ResizeRows(const int &Rows);
     void ResizeColumns(const int &Columns);
     void PopulatePixel(const QVector<QPair<QPoint, QColor>> &Points);

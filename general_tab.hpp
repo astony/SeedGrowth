@@ -16,24 +16,38 @@ public:
     explicit GeneralTab(QWidget *parent = 0);
 
     void Clean();
-    void SimulationOn();
-    void SimulationOff();
+
+    void GrowthOn();
+    void GrowthOff();
+
+    void RecrystallizationOn();
+    void RecrystallizationOff();
+
+    void MonteCarloOn();
+    void MonteCarloOff();
 
 private:
     QFormLayout *GeneralLayout;
     QSpinBox *ColumnChanger;
     QSpinBox *RowChanger;
-    QPushButton *Starter;
+    QPushButton *Growth;
+    QPushButton *Recrystallization;
+    QPushButton *MonteCarlo;
     QPushButton *Generator;
     QPushButton *Cleaner;
     QVector <QSpacerItem *> Spacers;
     QLCDNumber *Feed;
     QLCDNumber *Iteration;
 
+    void InputsOn();
+    void InputsOff();
+
 public slots:
     void SetFeeds(int feeds);
     void SetIterations(int iterations);
-    void SetSimulationTrigger(int value);
+    void SetGrowthTrigger(int value);
+    void SetRecrystallizationTrigger(int value);
+    void SetMonteCarloTrigger(int value);
 };
 
 #endif // GENERAL_TAB_HPP

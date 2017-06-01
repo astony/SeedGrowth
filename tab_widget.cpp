@@ -2,10 +2,13 @@
 
 TabWidget::TabWidget()
 {
-    isSimulationOn = false;
+    IsGrowthOn = false;
+    IsRecrystallizationOn = false;
+    IsMonteCarloOn = false;
 
     generalTab = new GeneralTab(this);
     optionsTab = new OptionsTab(this);
+
     addTab(generalTab, tr("Główne Opcje"));
     addTab(optionsTab, tr("Dodatkowe Opcje"));
 
@@ -13,7 +16,7 @@ TabWidget::TabWidget()
 
     connect(this, SIGNAL(ProvideFeeds(int)), generalTab, SLOT(SetFeeds(int)));
     connect(this, SIGNAL(ProvideIterations(int)), generalTab, SLOT(SetIterations(int)));
-    connect(this, SIGNAL(ProvideSimulationTrigger(int)), generalTab, SLOT(SetSimulationTrigger(int)));
+    connect(this, SIGNAL(ProvideGrowthTrigger(int)), generalTab, SLOT(SetGrowthTrigger(int)));
 }
 
 void TabWidget::SetFeeds(int feeds)
@@ -26,9 +29,9 @@ void TabWidget::SetIterations(int iterations)
     emit ProvideIterations(iterations);
 }
 
-void TabWidget::SetSimulationTrigger(int value)
+void TabWidget::SetGrowthTrigger(int value)
 {
-    emit ProvideSimulationTrigger(value);
+    emit ProvideGrowthTrigger(value);
 }
 
 void TabWidget::ColumnChangerChanged(int value)
@@ -56,25 +59,59 @@ void TabWidget::DrawGroupChanged(int value)
     emit DrawChanged(value);
 }
 
-void TabWidget::SimulationTrigger()
+void TabWidget::GrowthTrigger()
 {
-    isSimulationOn = !isSimulationOn;
+    IsGrowthOn = !IsGrowthOn;
 
-    if(isSimulationOn)
+    if(IsGrowthOn)
     {
-        generalTab->SimulationOn();
-        emit SimulationOn();
+        generalTab->GrowthOn();
+        emit GrowthOn();
     }
     else
     {
-        generalTab->SimulationOff();
-        emit SimulationOff();
+        generalTab->GrowthOff();
+        emit GrowthOff();
+    }
+}
+
+void TabWidget::RecrystallizationTrigger()
+{
+    IsRecrystallizationOn = !IsRecrystallizationOn;
+
+    if(IsRecrystallizationOn)
+    {
+        generalTab->RecrystallizationOn();
+        emit RecrystallizationOn();
+    }
+    else
+    {
+        generalTab->RecrystallizationOff();
+        emit RecrystallizationOff();
+    }
+}
+
+void TabWidget::MonteCarloTrigger()
+{
+    IsMonteCarloOn = !IsMonteCarloOn;
+
+    if(IsMonteCarloOn)
+    {
+        generalTab->MonteCarloOn();
+        emit MonteCarloOn();
+    }
+    else
+    {
+        generalTab->MonteCarloOff();
+        emit MonteCarloOff();
     }
 }
 
 void TabWidget::Generate()
 {
-    generalTab->SetSimulationTrigger(true);
+    generalTab->SetGrowthTrigger(true);
+    generalTab->SetRecrystallizationTrigger(true);
+    generalTab->SetMonteCarloTrigger(true);
     emit ProvideGenerate();
 }
 

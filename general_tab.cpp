@@ -5,13 +5,17 @@ GeneralTab::GeneralTab(QWidget *parent) : QWidget(parent)
     GeneralLayout = new QFormLayout;
     ColumnChanger = new QSpinBox;
     RowChanger = new QSpinBox;
-    Starter = new QPushButton("Start / Stop");
+    Growth = new QPushButton("Rozrost");
+    Recrystallization = new QPushButton("Rekrystalizacja");
+    MonteCarlo = new QPushButton("Monte Carlo");
     Generator = new QPushButton("Generuj");
     Cleaner = new QPushButton("Wyczyść");
     Feed = new QLCDNumber;
     Iteration = new QLCDNumber;
 
-    Starter->setEnabled(false);
+    Growth->setEnabled(false);
+    Recrystallization->setEnabled(false);
+    MonteCarlo->setEnabled(false);
 
     GeneralLayout->addRow("Kolumn:", ColumnChanger);
     GeneralLayout->addRow("Wierszy:", RowChanger);
@@ -31,6 +35,7 @@ GeneralTab::GeneralTab(QWidget *parent) : QWidget(parent)
     Iteration->setSegmentStyle(QLCDNumber::Flat);
     GeneralLayout->addRow("Żyje:", Feed);
     GeneralLayout->addRow("Kroków:", Iteration);
+
     Feed->setDigitCount(7);
     Iteration->setDigitCount(7);
 
@@ -40,7 +45,9 @@ GeneralTab::GeneralTab(QWidget *parent) : QWidget(parent)
 
     Spacers.append(new QSpacerItem(10, 20));
     GeneralLayout->addItem(Spacers.last());
-    GeneralLayout->setWidget(GeneralLayout->rowCount(), QFormLayout::SpanningRole, Starter);
+    GeneralLayout->setWidget(GeneralLayout->rowCount(), QFormLayout::SpanningRole, Growth);
+    GeneralLayout->setWidget(GeneralLayout->rowCount(), QFormLayout::SpanningRole, Recrystallization);
+    GeneralLayout->setWidget(GeneralLayout->rowCount(), QFormLayout::SpanningRole, MonteCarlo);
 
     Spacers.append(new QSpacerItem(10, 50));
     GeneralLayout->addItem(Spacers.last());
@@ -54,7 +61,9 @@ GeneralTab::GeneralTab(QWidget *parent) : QWidget(parent)
     connect(Generator, SIGNAL(clicked()), parent, SLOT(Generate()));
     connect(Cleaner, SIGNAL(clicked()), parent, SLOT(Clean()));
 
-    connect(Starter, SIGNAL(clicked()), parent, SLOT(SimulationTrigger()));
+    connect(Growth, SIGNAL(clicked()), parent, SLOT(GrowthTrigger()));
+    connect(Recrystallization, SIGNAL(clicked()), parent, SLOT(RecrystallizationTrigger()));
+    connect(MonteCarlo, SIGNAL(clicked()), parent, SLOT(MonteCarloTrigger()));
 }
 
 void GeneralTab::SetFeeds(int feeds)
@@ -67,14 +76,27 @@ void GeneralTab::SetIterations(int iterations)
     Iteration->display(iterations);
 }
 
-void GeneralTab::SetSimulationTrigger(int value)
+void GeneralTab::SetGrowthTrigger(int value)
 {
-    Starter->setEnabled(value);
+    Growth->setEnabled(value);
+}
+
+void GeneralTab::SetRecrystallizationTrigger(int value)
+{
+    Recrystallization->setEnabled(value);
+}
+
+void GeneralTab::SetMonteCarloTrigger(int value)
+{
+    MonteCarlo->setEnabled(value);
 }
 
 void GeneralTab::Clean()
 {
-    Starter->setEnabled(true);
+    Growth->setEnabled(false);
+    Recrystallization->setEnabled(false);
+    MonteCarlo->setEnabled(false);
+
     Generator->setEnabled(true);
     ColumnChanger->setEnabled(true);
     RowChanger->setEnabled(true);
@@ -83,20 +105,82 @@ void GeneralTab::Clean()
     SetIterations(0);
 }
 
-void GeneralTab::SimulationOn()
+void GeneralTab::InputsOn()
 {
-    Cleaner->setEnabled(false);
-    Starter->setEnabled(false);
-    Generator->setEnabled(false);
-    ColumnChanger->setEnabled(false);
-    RowChanger->setEnabled(false);
-}
-
-void GeneralTab::SimulationOff()
-{
-    Cleaner->setEnabled(true);
-    Starter->setEnabled(false);
-    Generator->setEnabled(false);
     ColumnChanger->setEnabled(true);
     RowChanger->setEnabled(true);
+    Cleaner->setEnabled(true);
+}
+
+void GeneralTab::InputsOff()
+{
+    ColumnChanger->setEnabled(false);
+    RowChanger->setEnabled(false);
+    Cleaner->setEnabled(false);
+}
+
+void GeneralTab::GrowthOn()
+{
+    Growth->setEnabled(true);
+    Recrystallization->setEnabled(false);
+    MonteCarlo->setEnabled(false);
+
+    Generator->setEnabled(true);
+
+    InputsOff();
+}
+
+void GeneralTab::GrowthOff()
+{
+    Growth->setEnabled(false);
+    Recrystallization->setEnabled(true);
+    MonteCarlo->setEnabled(true);
+
+    Generator->setEnabled(true);
+
+    InputsOn();
+}
+
+void GeneralTab::RecrystallizationOn()
+{
+    Growth->setEnabled(false);
+    Recrystallization->setEnabled(true);
+    MonteCarlo->setEnabled(false);
+
+    Generator->setEnabled(false);
+
+    InputsOff();
+}
+
+void GeneralTab::RecrystallizationOff()
+{
+    Growth->setEnabled(false);
+    Recrystallization->setEnabled(false);
+    MonteCarlo->setEnabled(false);
+
+    Generator->setEnabled(true);
+
+    InputsOn();
+}
+
+void GeneralTab::MonteCarloOn()
+{
+    Growth->setEnabled(false);
+    Recrystallization->setEnabled(false);
+    MonteCarlo->setEnabled(true);
+
+    Generator->setEnabled(false);
+
+    InputsOff();
+}
+
+void GeneralTab::MonteCarloOff()
+{
+    Growth->setEnabled(false);
+    Recrystallization->setEnabled(false);
+    MonteCarlo->setEnabled(false);
+
+    Generator->setEnabled(true);
+
+    InputsOn();
 }

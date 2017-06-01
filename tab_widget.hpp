@@ -17,12 +17,14 @@ private:
     GeneralTab *generalTab;
     OptionsTab *optionsTab;
 
-    bool isSimulationOn;
+    bool IsGrowthOn;
+    bool IsRecrystallizationOn;
+    bool IsMonteCarloOn;
 
 signals:
     void ProvideFeeds(int feeds);
     void ProvideIterations(int iterations);
-    void ProvideSimulationTrigger(int value);
+    void ProvideGrowthTrigger(int value);
 
     void ProvideGenerate();
     void ProvideClean();
@@ -33,13 +35,19 @@ signals:
     void BoundaryConditionChanged(int value);
     void DrawChanged(int value);
 
-    void SimulationOn();
-    void SimulationOff();
+    void GrowthOn();
+    void GrowthOff();
+
+    void RecrystallizationOn();
+    void RecrystallizationOff();
+
+    void MonteCarloOn();
+    void MonteCarloOff();
 
 public slots:
     void SetFeeds(int feeds);
     void SetIterations(int iterations);
-    void SetSimulationTrigger(int value);
+    void SetGrowthTrigger(int value);
 
     void ColumnChangerChanged(int value);
     void RowChangerChanged(int value);
@@ -50,7 +58,9 @@ public slots:
     void Generate();
     void Clean();
 
-    void SimulationTrigger();
+    void GrowthTrigger();
+    void RecrystallizationTrigger();
+    void MonteCarloTrigger();
 };
 
 #endif // TAB_WIDGET_HPP

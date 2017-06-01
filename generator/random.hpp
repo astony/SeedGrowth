@@ -13,6 +13,12 @@ namespace Generator
         Random(int WidthMax, int HeightMax);
 
         QVector<QPair<QPoint, QColor>>* generate();
+        void FillPoints();
+        void FillColors();
+
+    protected:
+        int UniqColorsCount;
+        int UniqPointsCount;
     };
 }
 

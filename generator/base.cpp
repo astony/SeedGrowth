@@ -17,14 +17,29 @@ void Generator::Base::SetHeightMax(int HeightMax)
 
 QPoint Generator::Base::GetRandomPoint()
 {
-    std::uniform_int_distribution<int> DistributionX(0, WidthMax);
-    std::uniform_int_distribution<int> DistributionY(0, HeightMax);
-    return QPoint(DistributionX(RandomEngine), DistributionY(RandomEngine));
+    if(Points.size() > 0)
+    {
+        std::uniform_int_distribution<int> Distribution(0, Points.size() - 1);
+        return Points.at(Distribution(RandomEngine));
+    }
+    else
+    {
+        std::uniform_int_distribution<int> DistributionX(0, WidthMax);
+        std::uniform_int_distribution<int> DistributionY(0, HeightMax);
+        return QPoint(DistributionX(RandomEngine), DistributionY(RandomEngine));
+    }
 }
 
 QColor Generator::Base::GetRandomColor()
 {
-    // to do
-    // not always random probably
-    return QColor(qrand() % 205 + 50, qrand() % 205 + 50, qrand() % 205 + 50);
+    if(Colors.size() > 0)
+    {
+        std::uniform_int_distribution<int> Distribution(0, Colors.size() - 1);
+        return Colors.at(Distribution(RandomEngine));
+    }
+    else
+    {
+        std::uniform_int_distribution<int> Distribution(0, 200);
+        return QColor(Distribution(RandomEngine), Distribution(RandomEngine), Distribution(RandomEngine));
+    }
 }

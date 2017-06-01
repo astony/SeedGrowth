@@ -29,7 +29,9 @@ namespace Generator
         int WidthMax;
         int HeightMax;
 
-    private:
+        QVector<QPoint> Points;
+        QVector<QColor> Colors;
+
         std::default_random_engine RandomEngine;
 
     signals:
